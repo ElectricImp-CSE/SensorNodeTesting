@@ -179,9 +179,9 @@ class SensorNodeTest {
         switch (wakeReason) {
             case WAKEREASON_PIN:
                 // Woke on interrupt pin
+                server.log("Woke b/c int pin triggered");
                 if (_enableAccelInt) _accelIntHandler();
                 if (_enablePressInt) _pressIntHandler();
-                server.log("Woke b/c int pin triggered");
                 break;
             case WAKEREASON_TIMER:
                 // Woke on timer
@@ -196,7 +196,7 @@ class SensorNodeTest {
     function _sleep() {
         if (_wake.read() == 1) {
             logIntPinState();
-            imp.wakeup(1, sleep.bindenv(this));
+            imp.wakeup(1, _sleep.bindenv(this));
         } else {
             imp.onidle(function() { server.sleepfor(300); });
         }
@@ -247,8 +247,8 @@ class SensorNodeTest {
 // ------------------------------------------
 
 // Interrupt settings
-local TEST_WAKE_INT = false;
-local ENABLE_ACCEL_INT = false;
+local TEST_WAKE_INT = true;
+local ENABLE_ACCEL_INT = true;
 local ENABLE_PRESS_INT = false;
 local ENABLE_TEMPHUMID_INT = false;
 
@@ -266,7 +266,7 @@ node <- SensorNodeTest(ENABLE_ACCEL_INT, ENABLE_PRESS_INT, ENABLE_TEMPHUMID_INT)
 // node.testTempHumid();
 // node.testAccel();
 // node.testPressure();
-node.testLEDs();
+// node.testLEDs();
 
-// // // Test Interrupt
-// // node.testInterrupts(TEST_WAKE_INT);
+// // Test Interrupt
+// node.testInterrupts(TEST_WAKE_INT);
