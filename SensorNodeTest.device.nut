@@ -57,7 +57,7 @@ class SensorNodeTest {
         _wake = SensorNode_003.WAKE_PIN;
 
         SensorNode_003.SENSOR_I2C.configure(CLOCK_SPEED_400_KHZ);
-        SensorNode_003.PRESSURE_I2C_ADDR.configure(CLOCK_SPEED_400_KHZ);
+        SensorNode_003.RJ45_I2C.configure(CLOCK_SPEED_400_KHZ);
 
         // initialize sensors
         tempHumid = HTS221(SensorNode_003.SENSOR_I2C, SensorNode_003.TEMP_HUMID_I2C_ADDR);
@@ -129,11 +129,11 @@ class SensorNodeTest {
         local green = SensorNode_003.LED_GREEN;
 
         server.log("Turning blue LED on");
-        blue.configure(DIGITAL_IN, LED_ON);
+        blue.configure(DIGITAL_OUT, LED_ON);
 
         imp.wakeup(5, function() {
             server.log("Turning green LED on");
-            green.configure(DIGITAL_IN, LED_ON);
+            green.configure(DIGITAL_OUT, LED_ON);
         }.bindenv(this))
 
         imp.wakeup(20, function() {
@@ -246,32 +246,27 @@ class SensorNodeTest {
 // SETUP
 // ------------------------------------------
 
-// // Interrupt settings
-// local TEST_WAKE_INT = false;
-// local ENABLE_ACCEL_INT = false;
-// local ENABLE_PRESS_INT = false;
+// Interrupt settings
+local TEST_WAKE_INT = false;
+local ENABLE_ACCEL_INT = false;
+local ENABLE_PRESS_INT = false;
+local ENABLE_TEMPHUMID_INT = false;
 
-// // Initialize test class
-// node <- SensorNodeTest(ENABLE_ACCEL_INT, ENABLE_PRESS_INT);
+// Initialize test class
+node <- SensorNodeTest(ENABLE_ACCEL_INT, ENABLE_PRESS_INT, ENABLE_TEMPHUMID_INT);
 
 // // RUN TESTS
 // // ------------------------------------------
 
-// // // Scan for the sensor addresses
-// // node.scanI2C();
+// // Scan for the sensor addresses
+// node.scanSensorI2C();
 
-// // // Test power consumption during sleep
-// // node.testSleep();
-
-// // // Test that grove pins are working
-// // node.testGrove(GROVE_TIMER, REPEAT_I2C);
-
-// // // Test that all sensors can take a reading,
-// // // and that LED truns on and off (via library calls or toggling power gate)
+// // Test that all sensors can take a reading,
+// // and that LED truns on and off (via library calls or toggling power gate)
 // node.testTempHumid();
 // node.testAccel();
 // node.testPressure();
-// node.testLED();
+node.testLEDs();
 
 // // // Test Interrupt
 // // node.testInterrupts(TEST_WAKE_INT);
