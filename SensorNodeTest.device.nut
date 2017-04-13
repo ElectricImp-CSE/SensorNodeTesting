@@ -14,17 +14,18 @@ SensorNode_003 <- {
     "TEMP_HUMID_I2C_ADDR" : 0xBE,
     "ACCEL_I2C_ADDR" : 0x32,
     "PRESSURE_I2C_ADDR" : 0xB8,
-    "RJ45_ENABLE_PIN" : hardware.pinS,
+    "RJ12_PWR_EN_PIN" : hardware.pinS,
     "ONEWIRE_BUS_UART" : hardware.uartDM,
-    "RJ45_I2C" : hardware.i2cFG,
-    "RJ45_UART" : hardware.uartFG,
+    "RJ12_I2C" : hardware.i2cFG,
+    "RJ12_UART" : hardware.uartFG,
     "WAKE_PIN" : hardware.pinW,
     "ACCEL_INT_PIN" : hardware.pinT,
     "PRESSURE_INT_PIN" : hardware.pinX,
     "TEMP_HUMID_INT_PIN" : hardware.pinE,
-    "NTC_ENABLE_PIN" : hardware.pinK,
+    "THERMISTER_EN_PIN" : hardware.pinK,
     "THERMISTER_PIN" : hardware.pinJ,
-    "FTDI_UART" : hardware.uartQRPW
+    "FTDI_UART" : hardware.uartQRPW,
+    "PWR_EN_3V3" : hardware.pinY
 }
 
 class SensorNodeTest {
@@ -57,7 +58,7 @@ class SensorNodeTest {
         _wake = SensorNode_003.WAKE_PIN;
 
         SensorNode_003.SENSOR_I2C.configure(CLOCK_SPEED_400_KHZ);
-        SensorNode_003.RJ45_I2C.configure(CLOCK_SPEED_400_KHZ);
+        SensorNode_003.RJ12_I2C.configure(CLOCK_SPEED_400_KHZ);
 
         // initialize sensors
         tempHumid = HTS221(SensorNode_003.SENSOR_I2C, SensorNode_003.TEMP_HUMID_I2C_ADDR);
@@ -75,9 +76,9 @@ class SensorNodeTest {
     }
 
     function scanRJ45I2C() {
-        SensorNode_003.RJ45_ENABLE_PIN.configure(DIGITAL_OUT, 1);
+        SensorNode_003.RJ12_PWR_EN_PIN.configure(DIGITAL_OUT, 1);
         for (local i = 2 ; i < 256 ; i+=2) {
-            if (SensorNode_003.RJ45_I2C.read(i, "", 1) != null) server.log(format("Device at address: 0x%02X", i));
+            if (SensorNode_003.RJ12_I2C.read(i, "", 1) != null) server.log(format("Device at address: 0x%02X", i));
         }
     }
 
