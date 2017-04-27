@@ -154,6 +154,7 @@ class SensorNodeTests {
 
     function testOnewire() {
         SensorNode_003.PWR_3v3_EN.configure(DIGITAL_OUT, 1);
+        SensorNode_003.RJ12_ENABLE_PIN.configure(DIGITAL_OUT, 1);
         if (ow.reset()) {
             local devices = ow.discoverDevices();
             foreach (id in devices) {
@@ -315,59 +316,81 @@ class BasicTest {
 
     function run() {
         if (!node.testDone) {
-            testLEDs()
-                .then(function(msg) {
-                    server.log(msg);
+            configureNV()
+                .then(function(result) {
+                    if (result.err) server.error(result.err);
+                    if (result.msg) server.log(result.msg);
+                    return pause();
+                }.bindenv(this))
+                .then(function(result) {
+                    if (result.err) server.error(result.err);
+                    if (result.msg) server.log(result.msg);
+                    return testLEDs();
+                }.bindenv(this))
+                .then(function(result) {
+                    if (result.err) server.error(result.err);
+                    if (result.msg) server.log(result.msg);
                     return pause();
                 }.bindenv(this))
                 // Temp humid sensor test
-                .then(function(msg) {
-                    server.log(msg);
+                .then(function(result) {
+                    if (result.err) server.error(result.err);
+                    if (result.msg) server.log(result.msg);
                     return ledFeedback(node.testTempHumid(), "Temp Humid sensor reading");
                 }.bindenv(this))
-                .then(function(msg) {
-                    server.log(msg);
+                .then(function(result) {
+                    if (result.err) server.error(result.err);
+                    if (result.msg) server.log(result.msg);
                     return pause();
                 }.bindenv(this))
                 // Pressure sensor test
-                .then(function(msg) {
-                    server.log(msg);
+                .then(function(result) {
+                    if (result.err) server.error(result.err);
+                    if (result.msg) server.log(result.msg);
                     return ledFeedback(node.testPressure(), "Pressure sensor reading");
                 }.bindenv(this))
-                .then(function(msg) {
-                    server.log(msg);
+                .then(function(result) {
+                    if (result.err) server.error(result.err);
+                    if (result.msg) server.log(result.msg);
                     return pause();
                 }.bindenv(this))
                 // Accel sensor test
-                .then(function(msg) {
-                    server.log(msg);
+                .then(function(result) {
+                    if (result.err) server.error(result.err);
+                    if (result.msg) server.log(result.msg);
                     return ledFeedback(node.testAccel(), "Accel sensor reading");
                 }.bindenv(this))
-                .then(function(msg) {
-                    server.log(msg);
+                .then(function(result) {
+                    if (result.err) server.error(result.err);
+                    if (result.msg) server.log(result.msg);
                     return pause();
                 }.bindenv(this))
                 // Onwire discovery test
-                .then(function(msg) {
-                    server.log(msg);
+                .then(function(result) {
+                    if (result.err) server.error(result.err);
+                    if (result.msg) server.log(result.msg);
                     return ledFeedback(node.testOnewire(), "OneWire discovery");
                 }.bindenv(this))
-                .then(function(msg) {
-                    server.log(msg);
+                .then(function(result) {
+                    if (result.err) server.error(result.err);
+                    if (result.msg) server.log(result.msg);
                     return pause();
                 }.bindenv(this))
                 // Onewire i2c test
-                .then(function(msg) {
-                    server.log(msg);
+                .then(function(result) {
+                    if (result.err) server.error(result.err);
+                    if (result.msg) server.log(result.msg);
                     local sensors = node.scanRJ12I2C();
                     return ledFeedback(sensors.find(0x80) != null, "OneWire I2C scan");
                 }.bindenv(this))
-                .then(function(msg) {
-                    server.log(msg);
+                .then(function(result) {
+                    if (result.err) server.error(result.err);
+                    if (result.msg) server.log(result.msg);
                     return pause();
                 }.bindenv(this))
-                .then(function(msg) {
-                    server.log(msg);
+                .then(function(result) {
+                    if (result.err) server.error(result.err);
+                    if (result.msg) server.log(result.msg);
                     server.log("Test low power. Then wake by tossing");
                     // configure interrupt, and sleep
                     node.testInterrupts(TEST_WAKE_INT)
@@ -378,7 +401,7 @@ class BasicTest {
     function pause() {
         return Promise(function(resolve, reject) {
             imp.wakeup(pauseTimer, function() {
-                return resolve("Starting next test...")
+                return resolve({"err" : null, "msg" : "Starting next test..."})
             });
         }.bindenv(this))
     }
@@ -387,14 +410,23 @@ class BasicTest {
         if ("int1" in intTable) {
             imp.wakeup(0, function() {
                 ledFeedback(true, "Freefall detected")
-                    .then(function(msg) {
-                        server.log(msg);
+                    .then(function(result) {
+                        if (result.err) server.error(result.err);
+                        if (result.msg) server.log(result.msg);
                         return pause();
                     }.bindenv(this))
-                    .then(function(msg) {
-                        server.log(msg);
-                        node.testLEDOn(SensorNodeTests.LED_GREEN);
-                        node.testLEDOn(SensorNodeTests.LED_BLUE);
+                    .then(function(result) {
+                        if (result.err) server.error(result.err);
+                        if (result.msg) server.log(result.msg);
+                        local passed = nv.testResults.passed;
+                        local failed = nv.testResults.failed;
+                        if (failed > 0) {
+                            node.testLEDOn(SensorNodeTests.LED_BLUE);
+                        } else {
+                            node.testLEDOn(SensorNodeTests.LED_GREEN);
+                        }
+                        server.log("Number of tests passed: " + passed);
+                        server.log("Number of test failed: " + failed);
                         server.log("Testing Done.")
                     }.bindenv(this))
             }.bindenv(this))
@@ -414,7 +446,7 @@ class BasicTest {
                     imp.wakeup(feedbackTimer, function() {
                         // Blue led off
                         node.testLEDOff(SensorNodeTests.LED_BLUE);
-                        return resolve("LED Tesing Passed");
+                        return resolve({"err" : null, "msg" : "LED Tesing Passed"});
                     }.bindenv(this));
                 }.bindenv(this))
             }.bindenv(this));
@@ -423,22 +455,34 @@ class BasicTest {
 
     function ledFeedback(testResult, sensorMsg) {
         return Promise(function (resolve, reject) {
-            local resultMsg;
+            local err = null;
+            local msg = null;
             if (testResult) {
                 // Green LED on
                 node.testLEDOn(SensorNodeTests.LED_GREEN);
-                resultMsg = " test passed";
+                msg = sensorMsg + " test passed";
+                if ("nv" in getroottable()) nv.testResults.passed += 1;
             } else {
                 // Blue LED on
                 node.testLEDOn(SensorNodeTests.LED_BLUE);
-                resultMsg = " TEST FAILED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+                err = sensorMsg + " test failed"
+                if ("nv" in getroottable()) nv.testResults.failed += 1;
             }
             imp.wakeup(feedbackTimer, function() {
                 node.testLEDOff(SensorNodeTests.LED_GREEN);
                 node.testLEDOff(SensorNodeTests.LED_BLUE);
-                return resolve(sensorMsg + resultMsg);
+                return resolve({"err" : err, "msg" : msg});
             }.bindenv(this));
         }.bindenv(this));
+    }
+
+    function configureNV() {
+        return Promise(function(resolve, reject) {
+            local root = getroottable();
+            if (!("nv" in root)) root.nv <- {};
+            if (!("testResults" in nv)) nv.testResults <- {"passed" : 0, "failed" : 0};
+            return resolve({"err" : null, "msg" : "nv congigured"});
+        }.bindenv(this))
     }
 }
 

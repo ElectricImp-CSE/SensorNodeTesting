@@ -153,7 +153,7 @@ Initializes sensor node class, and sets up the test timing variables.
 
 #### run()
 
-Runs tests all tests log results and turn on green LED if test passes, blue if test fails.
+Runs tests. All tests log results. All but the LED and manual tests turn on green LED if test passes, blue if test fails.
 
 * test LEDs: turn on green led, then turn on blue led
 * test temp/humid sensor reading in range
@@ -165,7 +165,7 @@ Runs tests all tests log results and turn on green LED if test passes, blue if t
 * *MANUAL TEST* low power while alseep
 * *MANUAL TEST* toss sensor node in air to wake
 * test that freefall was triggered and sensor node wakes
-* turns on both LEDs when all tests complete
+* when all tests complete turns on Green LED if all tests pass, Blue LED if any test failed
 
 ##### Example:
 
