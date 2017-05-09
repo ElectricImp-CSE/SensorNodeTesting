@@ -471,9 +471,9 @@ class SensorNodeFactory {
                 agent.send("set.label.data", deviceData);
             }
 
-            server.bless(passed, function(blessSuccess) {
-                server.log("Blessing " + (blessSuccess ? "PASSED" : "FAILED"));
-            }.bindenv(this));
+            // server.bless(passed, function(blessSuccess) {
+            //     server.log("Blessing " + (blessSuccess ? "PASSED" : "FAILED"));
+            // }.bindenv(this));
 
             // Clear wifi credentials on power cycle
             imp.clearconfiguration();
