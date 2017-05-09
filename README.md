@@ -1,6 +1,6 @@
 # Sensor Node Testing
 
-The SensorNodeTest.device.nut file includes a small test suite for testing sensors on the Sensor Node. This code currently supports Imp001 and Imp004 kits. Included in the device.nut file is a class that contains the tests (see documentation below for details) as well as some example code including setup and runtime code.  Please adjust the example code to run the desired tests.
+The SensorNodeTest.device.nut file includes a small test suite for testing sensors on the Sensor Node. Included in the device.nut file is a class that contains the tests (see documentation below for details) as well as some example code including setup and runtime code.  Please adjust the example code to run the desired tests.
 
 ## Sensor Node Tests Class
 
