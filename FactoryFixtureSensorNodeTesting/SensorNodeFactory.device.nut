@@ -956,7 +956,7 @@ class SensorNodeFactory {
 // // ------------------------------------------
 server.log("Device Running...");
 
-const SSID = "impair";
-const PASSWORD = "WrestlersGCC";
+const SSID = "";
+const PASSWORD = "";
 
 SensorNodeFactory(SSID, PASSWORD);
