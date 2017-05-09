@@ -62,8 +62,13 @@ class SensorNodeFactoryAgent {
             device.on("set.label.data", setLabelHandler.bindenv(this));
             device.on("test.result", testResultHandler.bindenv(this));
             device.on("get.test.results", sendResults.bindenv(this));
+            device.on("clear.test.resluts", clearResults.bindenv(this));
 
             if (debug) server.log("Running Device Under Test Flow");
+        }
+
+        function clearResults(nada) {
+            testResults = {"passed" : [], "failed" : []};
         }
 
         function sendResults(nada) {

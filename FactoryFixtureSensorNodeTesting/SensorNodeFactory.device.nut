@@ -421,6 +421,10 @@ class SensorNodeFactory {
         function printLabel(data) {
             if (printer == null) configurePrinter();
 
+            printer.setOrientation(QL720NW.PORTRAIT)
+                .setFont(QL720NW.FONT_HELSINKI)
+                .setFontSize(QL720NW.FONT_SIZE_48);
+
             if ("mac" in data) {
                 // Log mac address
                 server.log(data.mac);
@@ -446,8 +450,8 @@ class SensorNodeFactory {
 
     RunDeviceUnderTest = class {
 
-        static LED_FEEDBACK_AFTER_TEST = 2;
-        static PAUSE_BTWN_TESTS = 1.5;
+        static LED_FEEDBACK_AFTER_TEST = 0.5;
+        static PAUSE_BTWN_TESTS = 0.2;
 
         test = null;
 
@@ -466,8 +470,15 @@ class SensorNodeFactory {
                 server.log("Sending Label Data: " + deviceData.mac);
                 agent.send("set.label.data", deviceData);
             }
+
+            server.bless(passed, function(blessSuccess) {
+                server.log("Blessing " + (blessSuccess ? "PASSED" : "FAILED"));
+            }.bindenv(this));
+
             // Clear wifi credentials on power cycle
             imp.clearconfiguration();
+            // clear test results
+            agent.send("clear.test.results", null);
         }
 
         // Sensor Node Tests
